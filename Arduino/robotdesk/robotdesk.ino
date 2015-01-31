@@ -35,9 +35,21 @@ void loop() {
 void hello_actuator(){
   
   //lets try to extend the actuator for 10 seconds,
+  extendActuator(0);
+  delay(10000);
   // then wait for 10 seconds
+  stopActuator(0);
+  delay(10000);
+    
   // then retract for 10 seconds
+  retractActuator(0);
+  delay(10000);
   
+  //stop
+  stopActuator(0);
+
+  //lets wait for 30 seconds before starting again...
+  delay(30000);
 }
 
 void listen_on_serial(){
@@ -52,6 +64,8 @@ void listen_on_serial(){
 void extendActuator(int actuator) {
   //Set one relay one and the other off
   //this will move extend the actuator
+  //todo: update this to extend the passed-in actuator
+  
   digitalWrite(RELAY_1_A, HIGH);
   digitalWrite(RELAY_1_B, LOW);
 }
@@ -59,6 +73,7 @@ void extendActuator(int actuator) {
 void retractActuator(int actuator) { 
   //Set one relay off and the other on 
   //this will move retract the actuator 
+    //todo: update this to retract the passed-in actuator
   digitalWrite(RELAY_1_A, LOW);
   digitalWrite(RELAY_1_B, HIGH); 
 }
@@ -66,6 +81,7 @@ void retractActuator(int actuator) {
 void stopActuator(int actuator) {
  //Set both relays off
  //this will stop the actuator in a braking
+   //todo: update this to stop the passed-in actuator
  digitalWrite(RELAY_1_A, LOW);
  digitalWrite(RELAY_1_B, LOW); } 
 
