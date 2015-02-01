@@ -33,13 +33,15 @@ void loop() {
 
 
 void hello_actuator(){
+  //lets give it a few seconds before we start.
+  delay(5000);
   
   //lets try to extend the actuator for 10 seconds,
   extendActuator(0);
   delay(10000);
   // then wait for 10 seconds
   stopActuator(0);
-  delay(10000);
+  delay(3000);
     
   // then retract for 10 seconds
   retractActuator(0);
@@ -49,7 +51,7 @@ void hello_actuator(){
   stopActuator(0);
 
   //lets wait for 30 seconds before starting again...
-  delay(30000);
+  delay(5000);
 }
 
 void listen_on_serial(){
