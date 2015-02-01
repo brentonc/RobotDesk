@@ -64,13 +64,14 @@ void hello_actuator(){
 void reset_to_closed(){
   
  retractActuator(0);
- delay(100000);
-  
+ delay(FULLEXTEND_TIME + 1000);
+  while(true){};
 }
 
 void fully_extend() {
   extendActuator(0);
-  delay(100000);
+  delay(FULLEXTEND_TIME + 1000);
+  while(true){};
 }
 
 void listen_on_serial(){
