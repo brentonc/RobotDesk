@@ -26,20 +26,22 @@ void setup() {
 
 // the loop routine runs over and over again forever:
 void loop() {
+
   hello_actuator();
   
   
 }
 
-
+// "Hello World" for the linear actuator
 void hello_actuator(){
   //lets give it a few seconds before we start.
   delay(5000);
   
-  //lets try to extend the actuator for 10 seconds,
+  //lets extend the actuator for a bit
   extendActuator(0);
   delay(10000);
-  // then wait for 10 seconds
+  
+  // then wait for a few seconds
   stopActuator(0);
   delay(3000);
     
@@ -50,7 +52,7 @@ void hello_actuator(){
   //stop
   stopActuator(0);
 
-  //lets wait for 30 seconds before starting again...
+  //lets wait before starting again...
   delay(5000);
 }
 
