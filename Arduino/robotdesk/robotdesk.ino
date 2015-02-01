@@ -11,6 +11,8 @@ http://www.firgelliauto.com/blogs/news/18090523-how-to-use-an-arduino-with-firge
 
 const int RELAY_1_A = 0;
 const int RELAY_1_B = 1;
+const int FULLEXTEND_TIME = 30000;
+const int IN_PER_SEC = 0.6;
 
 
 // the setup routine runs once when you press reset:
@@ -27,8 +29,11 @@ void setup() {
 // the loop routine runs over and over again forever:
 void loop() {
 
-  hello_actuator();
   
+  
+  //hello_actuator();
+  reset_to_closed();
+  //fully_extend();
   
 }
 
@@ -54,6 +59,18 @@ void hello_actuator(){
 
   //lets wait before starting again...
   delay(5000);
+}
+
+void reset_to_closed(){
+  
+ retractActuator(0);
+ delay(100000);
+  
+}
+
+void fully_extend() {
+  extendActuator(0);
+  delay(100000);
 }
 
 void listen_on_serial(){
