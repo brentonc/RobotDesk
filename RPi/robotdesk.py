@@ -50,6 +50,10 @@ def initialize():
     print("Done setting up")
 
 
+def cleanup():
+    GPIO.cleanup()
+
+
 relay_1_a_signal = 23
 relay_1_b_signal = 24
 
@@ -65,7 +69,7 @@ if __name__ == "__main__":
         lower(10)
 
     finally:
-        GPIO.cleanup()
+        cleanup()
 
 
 
