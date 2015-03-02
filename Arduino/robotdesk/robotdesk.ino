@@ -9,8 +9,8 @@ http://www.firgelliauto.com/blogs/news/18090523-how-to-use-an-arduino-with-firge
 
 */
 
-const int RELAY_1_A = 0;
-const int RELAY_1_B = 1;
+const int RELAY_1_A = 3;
+const int RELAY_1_B = 2;
 const int FULLEXTEND_TIME = 30000;
 const int IN_PER_SEC = 0.6;
 
@@ -65,12 +65,14 @@ void reset_to_closed(){
   
  retractActuator(0);
  delay(FULLEXTEND_TIME + 1000);
+  stopActuator(0);
   while(true){};
 }
 
 void fully_extend() {
   extendActuator(0);
   delay(FULLEXTEND_TIME + 1000);
+  stopActuator(0);
   while(true){};
 }
 

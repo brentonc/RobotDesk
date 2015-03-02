@@ -19,6 +19,10 @@ def stop_actuator(a, b):
     GPIO.output(a, GPIO.LOW)
 
 
+def reset_actuator():
+    lower(20)
+
+
 def elevate(distance):
     extend_time = calculate_time(distance)
     extend_actuator(relay_1_a_signal, relay_1_b_signal)
@@ -46,11 +50,12 @@ def initialize():
     print("Done setting up")
 
 
+relay_1_a_signal = 23
+relay_1_b_signal = 24
+
 if __name__ == "__main__":
     try:
         #setup GPIO using BCM numbering
-        relay_1_a_signal = 23
-        relay_1_b_signal = 24
 
         initialize()
         time.sleep(3)
