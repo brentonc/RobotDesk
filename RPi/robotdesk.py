@@ -1,4 +1,5 @@
 import time
+import RPi.GPIO as GPIO
 
 
 class DeskController():
@@ -14,7 +15,6 @@ class DeskController():
             print('Running in whatif mode')
 
         if self.use_gpio:
-            import RPi.GPIO as GPIO
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.relay_a, GPIO.OUT)
             GPIO.setup(self.relay_b, GPIO.OUT)
