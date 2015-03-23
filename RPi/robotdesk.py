@@ -9,6 +9,11 @@ class DeskController():
         self.relay_b = relay_b
 
         if self.use_gpio:
+            print('Running in GPIO mode')
+        else:
+            print('Running in whatif mode')
+
+        if self.use_gpio:
             import RPi.GPIO as GPIO
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.relay_a, GPIO.OUT)
@@ -60,6 +65,7 @@ class DeskController():
 if __name__ == "__main__":
     relay_a_signal = 4
     relay_b_signal = 17
+
     desk = DeskController(relay_a_signal, relay_b_signal, False)
     desk.elevate(6)
     time.sleep(5)
