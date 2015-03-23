@@ -1,10 +1,10 @@
 import time
-import RPi.GPIO as GPIO
 
 
 class DeskController():
 
     def __init__(self, relay_a, relay_b, use_gpio):
+
         self.use_gpio = use_gpio
         self.relay_a = relay_a
         self.relay_b = relay_b
@@ -15,13 +15,36 @@ class DeskController():
             print('Running in whatif mode')
 
         if self.use_gpio:
+            import RPi.GPIO as GPIO
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.relay_a, GPIO.OUT)
             GPIO.setup(self.relay_b, GPIO.OUT)
 
     def __del__(self):
         if self.use_gpio:
+            import RPi.GPIO as GPIO
             GPIO.cleanup()
+
+    def extend(self):
+        print('extending')
+        if self.use_gpio:
+            import RPi.GPIO as GPIO
+            GPIO.output(self.relay_a, GPIO.LOW)
+            GPIO.output(self.relay_b, GPIO.HIGH)
+
+    def retract(self):
+        print('retracting')
+        if self.use_gpio:
+            import RPi.GPIO as GPIO
+            GPIO.output(self.relay_b, GPIO.LOW)
+            GPIO.output(self.relay_a, GPIO.HIGH)
+
+    def stop(self):
+        print('stopping')
+        if self.use_gpio:
+            import RPi.GPIO as GPIO
+            GPIO.output(self.relay_b, GPIO.LOW)
+            GPIO.output(self.relay_a, GPIO.LOW)
 
     def elevate(self, distance):
         extend_time = self.calculate_time(distance)
@@ -44,23 +67,7 @@ class DeskController():
         RATE = .6
         return distance / RATE
 
-    def extend(self):
-        print('extending')
-        if self.use_gpio:
-            GPIO.output(self.relay_a, GPIO.LOW)
-            GPIO.output(self.relay_b, GPIO.HIGH)
 
-    def retract(self):
-        print('retracting')
-        if self.use_gpio:
-            GPIO.output(self.relay_b, GPIO.LOW)
-            GPIO.output(self.relay_a, GPIO.HIGH)
-
-    def stop(self):
-        print('stopping')
-        if self.use_gpio:
-            GPIO.output(self.relay_b, GPIO.LOW)
-            GPIO.output(self.relay_a, GPIO.LOW)
 
 if __name__ == "__main__":
     relay_a_signal = 4
