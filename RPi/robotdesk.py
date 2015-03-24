@@ -75,7 +75,7 @@ class DeskController():
 
     def write_height(self, height):
         if float(height) < 0:
-            print(('WARNING: height' + str(height) + ' less than zero, reset recommended.'))
+            print(('WARNING: height ' + str(height) + ' less than zero, reset recommended.'))
             height = 0
         if float(height) > 18:
             print(('WARNING: height' + str(height) + ' greater than max height (18), reset recommended.'))
