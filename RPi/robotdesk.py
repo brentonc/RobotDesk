@@ -130,7 +130,7 @@ class AzureQueueClient:
 
         localtime = time.localtime()
         timeString = time.strftime("%Y-%m-%dT%H:%M:%S")
-        msgbody = '{ "device_id": "BrentonsDesk", "command_text":"", "new_height":' + "{:.9f}".format(ht) + ', "move_initiate_time":"' + timeString + '"}'
+        msgbody = '{ "device_id": "BrentonsDesk", "command_text":"", "to_height":' + "{:.9f}".format(ht) + ', "move_initiate_time":"' + timeString + '"}'
         msg = Message(str.encode(msgbody))
 
         sbs = ServiceBusService("brentoniot-ns",shared_access_key_name=self.key_name, shared_access_key_value=self.key_value)
