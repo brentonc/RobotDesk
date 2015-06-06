@@ -9,7 +9,7 @@ namespace RobotDesk.Core.Data
     [Table("HeightLog")]
     public partial class HeightLog
     {
-        public int id { get; set; }
+        public string id { get; set; }
 
         [Required]
         [StringLength(100)]
