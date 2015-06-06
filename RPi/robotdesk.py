@@ -1,6 +1,7 @@
 import time
 import sys
 import getopt
+from azure.servicebus import ServiceBusService, Message
 
 
 class DeskController():
@@ -12,6 +13,7 @@ class DeskController():
         self.relay_b = relay_b
         self.height_filename = ht_file
         self.resetting = False
+        self.cloud_client = AzureQueueClient('SendPolicy', 'u5eLfXukr8gAMjV171dIBoVGz4XtJI4DaKLVyXNq1x4=')
 
         if self.whatif:
             print('Running in whatif mode')
@@ -68,7 +70,7 @@ class DeskController():
     def move_to(self, ht):
         current = self.where_am_i()
         distance = ht - current
-        print("distance to move:" + str(distance))
+        print(("distance to move:" + str(distance)))
         if distance > 0:
             self.elevate(abs(distance))
         elif distance < 0:
@@ -95,6 +97,8 @@ class DeskController():
         f.write(str(height))
         f.close()
 
+        self.cloud_client.send_height_to_azure(height)
+
     def read_height(self):
         height = "0"
         try:
@@ -115,6 +119,23 @@ class DeskController():
         ht = self.read_height()
         return ht
 
+
+class AzureQueueClient:
+
+    def __init__(self, key_name, key_value):
+        self.key_name = key_name
+        self.key_value = key_value
+
+    def send_height_to_azure(self, ht):
+
+
+        sbs = ServiceBusService("brentoniot-ns",shared_access_key_name=self.key_name, shared_access_key_value=self.key_value)
+        print('sending...')
+        msgbody = str.encode('{ "DeviceId": "BrentonsDesk", "new_height":' + "{:.9f}".format(ht) + '}')
+        #msgbody = '{ "DeviceId": "BrentonsDesk", "new_height":' + "{:.9f}".format(ht) + '}'
+        msg = Message(msgbody)
+        sbs.send_queue_message('robotdeskheightchangequeue', msg)
+        print('sent!')
 
 def run(whatif):
     desk = DeskController(whatif)
