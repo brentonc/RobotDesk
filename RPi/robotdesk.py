@@ -128,14 +128,16 @@ class AzureQueueClient:
 
     def send_height_to_azure(self, ht):
 
+        localtime = time.localtime()
+        timeString = time.strftime("%Y-%m-%dT%H:%M:%S")
+        msgbody = '{ "device_id": "BrentonsDesk", "command_text":"", "new_height":' + "{:.9f}".format(ht) + ', "move_initiate_time":"' + timeString + '"}'
+        msg = Message(str.encode(msgbody))
 
         sbs = ServiceBusService("brentoniot-ns",shared_access_key_name=self.key_name, shared_access_key_value=self.key_value)
         print('sending...')
-        msgbody = str.encode('{ "DeviceId": "BrentonsDesk", "new_height":' + "{:.9f}".format(ht) + '}')
-        #msgbody = '{ "DeviceId": "BrentonsDesk", "new_height":' + "{:.9f}".format(ht) + '}'
-        msg = Message(msgbody)
+
         sbs.send_queue_message('robotdeskheightchangequeue', msg)
-        print('sent!')
+        print('sent ' + msgbody)
 
 def run(whatif):
     desk = DeskController(whatif)
