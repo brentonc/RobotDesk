@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
+using RobotDesk.Core;
+using RobotDesk.Web.Models;
 
 namespace RobotDesk.Web.Controllers
 {
@@ -11,8 +10,12 @@ namespace RobotDesk.Web.Controllers
         public ActionResult Index()
         {
             ViewBag.Title = "Home Page";
-
-            return View();
+            var model = new HomeViewModel();
+            var htLogSvc = new HeightLogSvc();
+            model.Log = htLogSvc.GetRecentHeightLogs(10);
+            model.CurrentHeight = model.Log.FirstOrDefault();
+            
+            return View(model);
         }
     }
 }

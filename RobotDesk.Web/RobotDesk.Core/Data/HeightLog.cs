@@ -25,5 +25,19 @@ namespace RobotDesk.Core.Data
         public double? move_duration_seconds { get; set; }
 
         public DateTime? move_initiate_time { get; set; }
+
+        public string SittingOrStanding
+        {
+            get
+            {
+                if (to_height > 10) {
+                    return "standing";
+                }
+                if (to_height < 7) {
+                    return "sitting";
+                }
+                return "uncomfortable";
+            }
+        }
     }
 }

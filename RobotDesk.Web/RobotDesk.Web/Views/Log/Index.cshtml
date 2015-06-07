@@ -1,0 +1,35 @@
+﻿@model IEnumerable<RobotDesk.Core.Data.HeightLog>
+
+@{
+    ViewBag.Title = "Height Log";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Height Log</h2>
+
+    The desk has recently been in the following positions:
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Height (inches)</th>
+                <th>Sitting or Standing?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.move_initiate_time
+                    </td>
+                    <td>
+                        @item.to_height
+                    </td>
+                    <td>
+                        @item.SittingOrStanding
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
