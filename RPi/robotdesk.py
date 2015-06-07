@@ -1,19 +1,27 @@
 import time
 import sys
 import getopt
+import configparser
+import json
+import socket
 from azure.servicebus import ServiceBusService, Message
 
 
 class DeskController():
 
-    def __init__(self, whatif=True, relay_a=4, relay_b=17, ht_file="ht.rd"):
+    def __init__(self,
+                    azure,
+                    whatif=True,
+                    relay_a=4,
+                    relay_b=17,
+                    ht_file="ht.rd"):
 
         self.whatif = whatif
         self.relay_a = relay_a
         self.relay_b = relay_b
         self.height_filename = ht_file
         self.resetting = False
-        self.cloud_client = AzureQueueClient('SendPolicy', 'u5eLfXukr8gAMjV171dIBoVGz4XtJI4DaKLVyXNq1x4=')
+        self.cloud_client = azure
 
         if self.whatif:
             print('Running in whatif mode')
@@ -122,25 +130,49 @@ class DeskController():
 
 class AzureQueueClient:
 
-    def __init__(self, key_name, key_value):
+    def __init__(self, key_name, key_value, namespace, queue_name, device_name):
         self.key_name = key_name
         self.key_value = key_value
+        self.namespace = namespace
+        self.queue_name = queue_name
+        self.device_name = device_name
 
     def send_height_to_azure(self, ht):
 
-        localtime = time.localtime()
         timeString = time.strftime("%Y-%m-%dT%H:%M:%S")
-        msgbody = '{ "device_id": "BrentonsDesk", "command_text":"", "to_height":' + "{:.9f}".format(ht) + ', "move_initiate_time":"' + timeString + '"}'
+        msgbody = '{ "device_id": "' + self.device_name +'", "command_text":"", "to_height":' + "{:.9f}".format(ht) + ', "move_initiate_time":"' + timeString + '"}'
         msg = Message(str.encode(msgbody))
 
-        sbs = ServiceBusService("brentoniot-ns",shared_access_key_name=self.key_name, shared_access_key_value=self.key_value)
+        sbs = ServiceBusService(self.namespace,shared_access_key_name=self.key_name, shared_access_key_value=self.key_value)
         print('sending...')
 
-        sbs.send_queue_message('robotdeskheightchangequeue', msg)
+        sbs.send_queue_message(self.queue_name, msg)
         print('sent ' + msgbody)
 
 def run(whatif):
-    desk = DeskController(whatif)
+
+ # Load the config info from the config file
+    config = configparser.ConfigParser()
+    config.read("config.rd")
+
+    # Make sure we have the items in the config
+    try:
+        azure_servicebus_keyname = config.get('Azure', 'servicebus_keyname')
+        azure_servicebus_keyvalue = config.get('Azure', 'servicebus_keyvalue')
+        azure_servicebus_namespace = config.get('Azure', 'servicebus_namespace')
+        azure_servicebus_queue = config.get('Azure', 'servicebus_queue')
+
+    except Exception:
+        sys.exit("Invalid or missing config.txt file.")
+
+    #azure = AzureQueueClient('SendPolicy', 'u5eLfXukr8gAMjV171dIBoVGz4XtJI4DaKLVyXNq1x4=')
+    azure = AzureQueueClient(azure_servicebus_keyname,
+                azure_servicebus_keyvalue,
+                azure_servicebus_namespace,
+                azure_servicebus_queue,
+                socket.gethostname())
+
+    desk = DeskController(azure, whatif)
     try:
         while(True):
             print(('Height is ' + str(desk.where_am_i())))
