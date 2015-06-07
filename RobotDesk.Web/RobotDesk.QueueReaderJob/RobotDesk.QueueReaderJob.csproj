@@ -99,6 +99,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Content Include="ConnectionStrings.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Performance\Microsoft.ServiceBus.MessagingPerformanceCounters.man" />
     <None Include="Properties\PublishProfiles\robotdesk.pubxml" />
