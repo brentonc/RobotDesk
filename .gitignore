@@ -259,3 +259,6 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+
+# Dont include connection strings
+ConnectionStrings.config
