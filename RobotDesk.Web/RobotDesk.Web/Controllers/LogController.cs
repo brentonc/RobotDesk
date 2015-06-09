@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using RobotDesk.Core;
 
 namespace RobotDesk.Web.Controllers
@@ -13,7 +9,7 @@ namespace RobotDesk.Web.Controllers
         public ActionResult Index()
         {
             var htLogSvc = new HeightLogSvc();
-            return View(htLogSvc.GetRecentHeightLogs(200));
+            return View(htLogSvc.GetRecentHeightLogs(100));
         }
     }
 }

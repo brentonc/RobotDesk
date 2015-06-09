@@ -9,9 +9,12 @@ namespace RobotDesk.QueueReaderJob
 {
     public class Functions
     {
-        // This function will get triggered/executed when a new message is written 
-        // on an Azure Queue called queue.
-
+        
+        /// <summary>
+        /// Triggered via Service Bus Queue, this function takes the message and records the contained info in the height log database
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="logger"></param>
         public static void ProcessQueueMessage(
             [ServiceBusTrigger("robotdeskheightchangequeue")] BrokeredMessage message, TextWriter logger) {
             logger.WriteLine("got message!");

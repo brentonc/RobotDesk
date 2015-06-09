@@ -5,6 +5,11 @@ using RobotDesk.Core.Data;
 
 namespace RobotDesk.Core {
     public class HeightLogSvc {
+
+        /// <summary>
+        /// Saves a height entry to the database
+        /// </summary>
+        /// <param name="entry"></param>
         public void SaveHeightLogEntry(HeightLog entry) {
 
             if (entry == null) throw new ArgumentNullException();
@@ -17,6 +22,10 @@ namespace RobotDesk.Core {
             }
         }
 
+        /// <summary>
+        /// Gets the most recent height entry
+        /// </summary>
+        /// <returns></returns>
         public HeightLog GetCurrentHeight() {
 
             using (var dbContext = new RobotDeskData()) {
@@ -26,22 +35,12 @@ namespace RobotDesk.Core {
                 return q.FirstOrDefault();
             }
         }
-//
-//        public List<HeightLog> GetRecentHeightLogs() {
-//            return GetRecentHeightLogs(new TimeSpan(24, 0, 0));
-//        }
-//
-//        public List<HeightLog> GetRecentHeightLogs(TimeSpan ts) {
-//            using (var dbContext = new RobotDeskData()) {
-//                var q = from ht in dbContext.HeightLogs
-//                    orderby ht.move_initiate_time
-//                    where ht.move_initiate_time > DateTime.Now.Subtract(ts)
-//                    select ht;
-//
-//                return q.ToList<HeightLog>();
-//            }
-//        }
 
+        /// <summary>
+        /// Gets the n most recent log entries
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public List<HeightLog> GetRecentHeightLogs(int count) {
             using (var dbContext = new RobotDeskData()) {
                 var q = from ht in dbContext.HeightLogs
