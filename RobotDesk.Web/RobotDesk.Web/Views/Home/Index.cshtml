@@ -1,7 +1,9 @@
 ﻿@model RobotDesk.Web.Models.HomeViewModel
 <div class="jumbotron">
     <h1>Robot Desk</h1>
-    <p class="lead">... is currently at a height of @Model.CurrentHeight.to_height inches above base.</p>
+    @if(@Model != null && @Model.CurrentHeight != null) {
+        <p class="lead">... is currently at a height of @Model.CurrentHeight.to_height inches above base.</p>
+    }
 </div>
 <div class="row">
     

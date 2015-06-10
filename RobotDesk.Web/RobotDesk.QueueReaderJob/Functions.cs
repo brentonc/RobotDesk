@@ -4,6 +4,7 @@ using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
 using RobotDesk.Core;
 using RobotDesk.Core.Data;
+using RobotDesk.Core.Services;
 
 namespace RobotDesk.QueueReaderJob
 {

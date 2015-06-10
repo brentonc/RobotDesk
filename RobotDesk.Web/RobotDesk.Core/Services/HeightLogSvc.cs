@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using RobotDesk.Core.Data;
 
-namespace RobotDesk.Core {
+namespace RobotDesk.Core.Services {
     public class HeightLogSvc {
 
         /// <summary>
@@ -48,6 +49,30 @@ namespace RobotDesk.Core {
                     select ht;
 
                 return q.Take(count).ToList<HeightLog>();
+            }
+        }
+
+        /// <summary>
+        /// Provides the records from the specified period, as well as the one precending.  This allows consumers to see whether the desk 
+        /// was previously in a sit or stand mode.
+        /// </summary>
+        /// <param name="periodStart"></param>
+        /// <param name="periodEnd"></param>
+        /// <returns></returns>
+        public List<HeightLog> GetPeriodHeightLogsPlusOneMore(DateTime periodStart, DateTime periodEnd) {
+            using (var dbContext = new RobotDeskData()) {
+                var q = (from ht in dbContext.HeightLogs
+                    where ht.move_initiate_time >= periodStart && ht.move_initiate_time <= periodEnd
+                    orderby ht.move_initiate_time descending
+                    select ht).Concat(
+                        (from ht in dbContext.HeightLogs
+                            where ht.move_initiate_time <= periodStart
+                            orderby ht.move_initiate_time descending
+                            select ht).Take(1)
+                    );
+
+                return q.ToList<HeightLog>();
+
             }
         }
     }

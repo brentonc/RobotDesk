@@ -58,8 +58,9 @@
     <Compile Include="Data\HeightLog.cs" />
     <Compile Include="Data\RobotDeskData.cs" />
     <Compile Include="Data\Threshold.cs" />
-    <Compile Include="HeightLogSvc.cs" />
+    <Compile Include="Services\HeightLogSvc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\SitStandCalculator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

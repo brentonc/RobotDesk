@@ -56,6 +56,9 @@
   <ItemGroup>
     <Compile Include="HeightLogTests\HeightLog_Serialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SitStandCalculatorTests\HeightLogDataMother.cs" />
+    <Compile Include="SitStandCalculatorTests\SitStandCalculator_Calculate_Tests.cs" />
+    <Compile Include="SitStandCalculatorTests\SitStandCalculator_Ctor_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RobotDesk.Core\RobotDesk.Core.csproj">
@@ -66,6 +69,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
