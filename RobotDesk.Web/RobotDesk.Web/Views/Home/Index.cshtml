@@ -1,37 +1,46 @@
 ﻿@model RobotDesk.Web.Models.HomeViewModel
 <div class="jumbotron">
     <h1>Robot Desk</h1>
-    @if(@Model != null && @Model.CurrentHeight != null) {
-        <p class="lead">... is currently at a height of @Model.CurrentHeight.to_height inches above base.</p>
-    }
+    
+
 </div>
 <div class="row">
-    
-    <div class="col-md-8">
-        The desk has recently been in the following positions:
-        <table class="table table-striped">
-            <thead><tr>
-                <th>Time</th>
-                <th>Height (inches)</th>
-                <th>Sitting or Standing?</th>
-            </tr></thead>
-            <tbody>
-            @foreach (var item in Model.Log) {
-                <tr>
-                    <td>
-                        @item.move_initiate_time
-                    </td>
-                    <td>
-                        @item.to_height
-                    </td>
-                    <td>
-                        @item.SittingOrStanding
-                    </td>
-                </tr>
-            }
-            </tbody>
 
-        </table>
+    <div class="col-md-8">
+        <div class="pagebody">
+            @if (@Model != null && @Model.CurrentHeight != null)
+            {
+                <p class="lead">... is currently at a height of @Model.CurrentHeight.to_height inches above base.</p>
+            }
+
+            The desk has recently been in the following positions:
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Height (inches)</th>
+                        <th>Sitting or Standing?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Log)
+                    {
+                        <tr>
+                            <td>
+                                @item.move_initiate_time
+                            </td>
+                            <td>
+                                @item.to_height
+                            </td>
+                            <td>
+                                @item.SittingOrStanding
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
     </div>
     <div class="col-md-2">
 @*        <h2>Web Hosting</h2>*@

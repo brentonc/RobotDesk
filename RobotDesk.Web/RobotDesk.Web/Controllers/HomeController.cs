@@ -14,10 +14,9 @@ namespace RobotDesk.Web.Controllers
             ViewBag.Title = "Home Page";
             var model = new HomeViewModel();
             var htLogSvc = new HeightLogSvc();
-            //            model.Log = htLogSvc.GetRecentHeightLogs(10);
-            //            model.CurrentHeight = model.Log.FirstOrDefault();
-            model.Log = htLogSvc.GetPeriodHeightLogsPlusOneMore(new DateTime(2015, 06, 07), new DateTime(2015, 06, 07, 23, 59, 59));
-            
+                        model.Log = htLogSvc.GetRecentHeightLogs(10);
+                        model.CurrentHeight = model.Log.FirstOrDefault();
+//            model.Log = htLogSvc.GetPeriodHeightLogsPlusOneMore(new DateTime(2015, 06, 07), new DateTime(2015, 06, 07, 23, 59, 59));
             
             return View(model);
         }
