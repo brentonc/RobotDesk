@@ -139,15 +139,22 @@ class AzureQueueClient:
 
     def send_height_to_azure(self, ht):
 
-        timeString = time.strftime("%Y-%m-%dT%H:%M:%S")
-        msgbody = '{ "device_id": "' + self.device_name +'", "command_text":"", "to_height":' + "{:.9f}".format(ht) + ', "move_initiate_time":"' + timeString + '"}'
+        d = {}
+        d['device_id'] = self.device_name
+        d['command_text'] = ""
+        d['to_height'] = "{:.9f}".format(ht)
+        d['move_initiate_time'] = time.strftime("%Y-%m-%dT%H:%M:%S")
+        msgbody = json.dumps(d)
         msg = Message(str.encode(msgbody))
 
-        sbs = ServiceBusService(self.namespace,shared_access_key_name=self.key_name, shared_access_key_value=self.key_value)
+        sbs = ServiceBusService(self.namespace,
+            shared_access_key_name=self.key_name,
+            shared_access_key_value=self.key_value)
         print('sending...')
 
         sbs.send_queue_message(self.queue_name, msg)
         print('sent ' + msgbody)
+
 
 def run(whatif):
 
@@ -165,7 +172,6 @@ def run(whatif):
     except Exception:
         sys.exit("Invalid or missing config.txt file.")
 
-    #azure = AzureQueueClient('SendPolicy', 'u5eLfXukr8gAMjV171dIBoVGz4XtJI4DaKLVyXNq1x4=')
     azure = AzureQueueClient(azure_servicebus_keyname,
                 azure_servicebus_keyvalue,
                 azure_servicebus_namespace,
