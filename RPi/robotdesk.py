@@ -14,7 +14,8 @@ class DeskController():
                     whatif=True,
                     relay_a=4,
                     relay_b=17,
-                    ht_file="ht.rd"):
+                    ht_file="ht.rd",
+                    max_height=20):
 
         self.whatif = whatif
         self.relay_a = relay_a
@@ -22,6 +23,7 @@ class DeskController():
         self.height_filename = ht_file
         self.resetting = False
         self.cloud_client = azure
+        self.max_height = max_height
 
         if self.whatif:
             print('Running in whatif mode')
@@ -76,6 +78,8 @@ class DeskController():
             self.write_height(self.read_height() - distance)
 
     def move_to(self, ht):
+        if ht > max_height:
+            print('that is too high!')
         current = self.where_am_i()
         distance = ht - current
         print(("distance to move:" + str(distance)))
