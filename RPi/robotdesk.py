@@ -78,8 +78,9 @@ class DeskController():
             self.write_height(self.read_height() - distance)
 
     def move_to(self, ht):
-        if ht > max_height:
+        if ht > self.max_height:
             print('that is too high!')
+            return
         current = self.where_am_i()
         distance = ht - current
         print(("distance to move:" + str(distance)))
