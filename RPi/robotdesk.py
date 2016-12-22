@@ -37,6 +37,7 @@ class DeskController():
             GPIO.setup(self.relay_b, GPIO.OUT)
 
     def cleanup(self):
+        print('cleaning up')
         if not self.whatif:
             import RPi.GPIO as GPIO
             GPIO.cleanup()
@@ -109,8 +110,9 @@ class DeskController():
         f = open(self.height_filename, 'w')
         f.write(str(height))
         f.close()
-
-        self.cloud_client.send_height_to_azure(height)
+        
+        if self.cloud_client is not None:
+            self.cloud_client.send_height_to_azure(height)
 
     def read_height(self):
         height = "0"
@@ -135,13 +137,29 @@ class DeskController():
 
 class AzureQueueClient:
 
+    def load_azure_config(self):
+        # Load the config info from the config file
+        config = configparser.ConfigParser()
+        config.read("config.rd")
+
+        # Make sure we have the items in the config
+        try:
+            self.key_name =config.get('Azure', 'servicebus_keyname')
+            self.key_value = config.get('Azure', 'servicebus_keyvalue')
+            self.namespace = config.get('Azure', 'servicebus_namespace')
+            self.queue_name = config.get('Azure', 'servicebus_queue')
+            self.device_name = socket.gethostname()
+    
+        except Exception:
+            sys.exit("Invalid or missing config.txt file.")
+    
     def __init__(self, key_name, key_value, namespace, queue_name, device_name):
         self.key_name = key_name
         self.key_value = key_value
         self.namespace = namespace
         self.queue_name = queue_name
         self.device_name = device_name
-
+    
     def send_height_to_azure(self, ht):
 
         d = {}
