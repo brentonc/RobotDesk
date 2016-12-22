@@ -31,6 +31,8 @@ def listen():
                     
                 if command == "MOVE":
                     desk.move_to(int(arg))
+                if command == "RESET":
+                    desk.reset()
             except TimeoutError:
                 #that's ok, just ask again
                 pass
