@@ -16,7 +16,8 @@ def listen():
     try:
         desk = robotdesk.DeskController(None)
         session = requests.Session()
-        url = "https://bcalexaapp.azurewebsites.net/api/desk/command"
+        command_url = "https://bcalexaapp.azurewebsites.net/api/desk/command"
+        height_info_url = "https://bcalexaapp.azurewebsites.net/api/desk/heightinfo"
         headers = {
             'Content-type': 'application/json'
         }
@@ -24,8 +25,12 @@ def listen():
 
         while True:
             try:
+                
+                ht = desk.read_height()
+                session.post(height_info_url,data = str(ht))
+                
                 print('waiting...')
-                response = session.get(url, timeout=timeout_seconds)
+                response = session.get(command_url, timeout=timeout_seconds)
                 msg = response.json()
                 if msg is not None:
                     print("Got a command:" + json.dumps(msg))
@@ -35,6 +40,8 @@ def listen():
                         desk.move_to(int(arg))
                     if command == "RESET":
                         desk.reset()
+                ht = desk.read_height()
+                response = session.post(height_info_url,data = str(ht))
             except TimeoutError:
                 #that's ok, just ask again
                 pass
