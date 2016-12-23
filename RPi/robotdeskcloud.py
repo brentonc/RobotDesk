@@ -2,19 +2,28 @@ import sys
 import json
 import requests
 import robotdesk
+import getopt
 
 
 def main(argv):
     """Primary entry point"""
-    listen()
 
-def listen():
+    whatif = False
+    
+    opts, args = getopt.getopt(argv, "w")
+    for opt, arg in opts:
+        if opt == '-w':
+            whatif = True
+
+    listen(whatif)
+
+def listen(whatif):
     """ Main program.  Listens to web service for desk commands. """
     print("Starting the robot desk cloud listener...")
     desk = None
     timeout_seconds = 60
     try:
-        desk = robotdesk.DeskController(None)
+        desk = robotdesk.DeskController(whatif)
         session = requests.Session()
         command_url = "https://bcalexaapp.azurewebsites.net/api/desk/command"
         height_info_url = "https://bcalexaapp.azurewebsites.net/api/desk/heightinfo"
