@@ -5,9 +5,11 @@ import robotdesk
 
 
 def main(argv):
+    """Primary entry point"""
     listen()
 
 def listen():
+    """ Main program.  Listens to web service for desk commands. """
     print("Starting the robot desk cloud listener...")
     desk = None
     timeout_seconds = 60
@@ -20,26 +22,25 @@ def listen():
         }
         session.headers.update(headers)
 
-        while(True):
+        while True:
             try:
                 print('waiting...')
                 response = session.get(url, timeout=timeout_seconds)
                 msg = response.json()
-                print("Got a command:" + json.dumps(msg))
-                command = msg['CommandCode']
-                arg = msg['CommandArg']
-                    
-                if command == "MOVE":
-                    desk.move_to(int(arg))
-                if command == "RESET":
-                    desk.reset()
+                if msg is not None:
+                    print("Got a command:" + json.dumps(msg))
+                    command = msg['CommandCode']
+                    arg = msg['CommandArg']
+                    if command == "MOVE":
+                        desk.move_to(int(arg))
+                    if command == "RESET":
+                        desk.reset()
             except TimeoutError:
                 #that's ok, just ask again
                 pass
             except requests.ReadTimeout:
                 #that's ok, just ask again
                 pass
-   
     finally:
         print("Stopping the robot desk cloud listener.  Have a nice day!")
         if desk is not None:
