@@ -23,7 +23,7 @@ def listen(whatif):
     desk = None
     timeout_seconds = 60
     try:
-        desk = robotdesk.DeskController(whatif)
+        desk = robotdesk.DeskController(azure=None, whatif=whatif)
         session = requests.Session()
         command_url = "https://bcalexaapp.azurewebsites.net/api/desk/command"
         height_info_url = "https://bcalexaapp.azurewebsites.net/api/desk/heightinfo"
