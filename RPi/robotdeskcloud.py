@@ -1,15 +1,16 @@
 import sys
 import json
+import time
+import getopt
 import requests
 import robotdesk
-import getopt
+
 
 
 def main(argv):
     """Primary entry point"""
 
     whatif = False
-    
     opts, args = getopt.getopt(argv, "w")
     for opt, arg in opts:
         if opt == '-w':
@@ -34,10 +35,8 @@ def listen(whatif):
 
         while True:
             try:
-                
-                ht = desk.read_height()
-                session.post(height_info_url,data = str(ht))
-                
+                current_height = desk.read_height()
+                session.post(height_info_url, data=str(ht))
                 print('waiting...')
                 response = session.get(command_url, timeout=timeout_seconds)
                 msg = response.json()
@@ -49,14 +48,14 @@ def listen(whatif):
                         desk.move_to(int(arg))
                     if command == "RESET":
                         desk.reset()
-                ht = desk.read_height()
-                response = session.post(height_info_url,data = str(ht))
-            except TimeoutError:
-                #that's ok, just ask again
-                pass
+                current_height = desk.read_height()
+                response = session.post(height_info_url, data=str(current_height))
             except requests.ReadTimeout:
                 #that's ok, just ask again
                 pass
+            except requests.ConnectTimeout:
+                #that's ok, just wait a bit and ask again
+                time.sleep(10)
     finally:
         print("Stopping the robot desk cloud listener.  Have a nice day!")
         if desk is not None:
