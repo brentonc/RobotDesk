@@ -4,12 +4,12 @@ import time
 import getopt
 import requests
 import robotdesk
-
+import logging
 
 
 def main(argv):
     """Primary entry point"""
-
+    logging.basicConfig(filename='robotdeskcloud.log', level=logging.DEBUG)
     whatif = False
     opts, args = getopt.getopt(argv, "w")
     for opt, arg in opts:
@@ -20,7 +20,7 @@ def main(argv):
 
 def listen(whatif):
     """ Main program.  Listens to web service for desk commands. """
-    print("Starting the robot desk cloud listener...")
+    logging.info("Starting the robot desk cloud listener...")
     desk = None
     timeout_seconds = 60
     try:
@@ -36,7 +36,7 @@ def listen(whatif):
         while True:
             try:
                 current_height = desk.read_height()
-                session.post(height_info_url, data=str(ht))
+                session.post(height_info_url, data=str(current_height))
                 print('waiting...')
                 response = session.get(command_url, timeout=timeout_seconds)
                 msg = response.json()
@@ -51,13 +51,19 @@ def listen(whatif):
                 current_height = desk.read_height()
                 response = session.post(height_info_url, data=str(current_height))
             except requests.ReadTimeout:
-                #that's ok, just ask again
-                pass
+                #that's ok, log it and ask again
+                logging.exception('read timeout')
+
             except requests.ConnectTimeout:
-                #that's ok, just wait a bit and ask again
+                #that's ok, log it, wait a bit and ask again
+                logging.exception('connect timeout')
                 time.sleep(10)
+
+            except:
+                logging.exception('unexpected error: %s', sys.exc_info()[0])
+                raise
     finally:
-        print("Stopping the robot desk cloud listener.  Have a nice day!")
+        logging.info("Stopping the robot desk cloud listener.  Have a nice day!")
         if desk is not None:
             desk.cleanup()
 
