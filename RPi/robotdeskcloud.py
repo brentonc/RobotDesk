@@ -50,15 +50,12 @@ def listen(whatif):
                         desk.reset()
                 current_height = desk.read_height()
                 response = session.post(height_info_url, data=str(current_height))
-            except requests.ReadTimeout:
+            except requests.exceptions.Timeout:
                 #that's ok, log it and ask again
                 logging.exception('read timeout')
-
-            except requests.ConnectTimeout:
-                #that's ok, log it, wait a bit and ask again
-                logging.exception('connect timeout')
-                time.sleep(10)
-
+            except requests.exceptions.HTTPError:
+                #that's ok, log it and ask again
+                logging.exception('http error')
             except:
                 logging.exception('unexpected error: %s', sys.exc_info()[0])
                 raise
