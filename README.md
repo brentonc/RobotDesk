@@ -4,7 +4,9 @@ This repository contains the software for a software-controlled adjustable desk.
 ##Background
 Several years back I started using a standing desk at home and work.  My first standing desk was the [simple $22 Ikea standing desk build](http://iamnotaprogrammer.com/Ikea-Standing-desk-for-22-dollars.html).  It was great and got me hooked.
 
-In 2014/2015 I considered buying a commercial electic standing desk but decided instead to build my own.  You can see more about the build process on my blog (https://brentonc.com/tag/robot-desk/), including the hardware used.
+In 2014/2015 I considered buying a commercial electic standing desk but decided instead to build my own.  
+
+You can see more about the build process on my blog (https://brentonc.com/tag/robot-desk/), including the hardware used and how to wire the actuators to the raspberry pi.
 
 ##
 This repository contains the following:
