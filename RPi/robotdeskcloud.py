@@ -9,7 +9,7 @@ import logging
 
 def main(argv):
     """Primary entry point"""
-    logging.basicConfig(filename='robotdeskcloud.log', level=logging.DEBUG)
+    logging.basicConfig(filename='robotdeskcloud.log', level=logging.WARNING)
     whatif = False
     opts, args = getopt.getopt(argv, "w")
     for opt, arg in opts:
@@ -50,12 +50,13 @@ def listen(whatif):
                         desk.reset()
                 current_height = desk.read_height()
                 response = session.post(height_info_url, data=str(current_height))
-            except requests.exceptions.Timeout:
-                #that's ok, log it and ask again
-                logging.exception('read timeout')
-            except requests.exceptions.HTTPError:
-                #that's ok, log it and ask again
-                logging.exception('http error')
+            except (requests.exceptions.Timeout,
+                    requests.exceptions.HTTPError,
+                    requests.exceptions.ConnectionError):
+                #that's ok, log it, wait a bit, and try again
+                logging.exception('connection error.')
+                #wait 5 a bit and then retry
+                time.sleep(10)
             except:
                 logging.exception('unexpected error: %s', sys.exc_info()[0])
                 raise

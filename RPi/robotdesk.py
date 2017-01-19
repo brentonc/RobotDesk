@@ -10,19 +10,30 @@ from azure.servicebus import ServiceBusService, Message
 class DeskController():
 
     def __init__(self,
-                    azure,
+                    notification_sender,
                     whatif=True,
                     relay_a=4,
                     relay_b=17,
                     ht_file="ht.rd",
                     max_height=20):
+        """ Initializes the DeskController so that it is ready for operation.abs
+
+            notification_sender -- the sender that should be use to transmit updates.  must contain method notify_height(height)
+            whatif              -- indicates whether or not to run in 'what if' mode.  'What if' mode causes most of the program to run, but does
+                                   not actually signal the GPIO pins.
+            relay_a             -- GPIO Pin number for the first relay
+            relay_b             -- GPIO Pin number for the first relay
+            ht_file             -- name of the file to use to track the desk height
+            max_height          -- max height to allow the desk to move to.
+
+        """
 
         self.whatif = whatif
         self.relay_a = relay_a
         self.relay_b = relay_b
         self.height_filename = ht_file
         self.resetting = False
-        self.cloud_client = azure
+        self.notification_sender = notification_sender
         self.max_height = max_height
 
         if self.whatif:
@@ -37,12 +48,14 @@ class DeskController():
             GPIO.setup(self.relay_b, GPIO.OUT)
 
     def cleanup(self):
+        """ Tears down the application, including GPIO pin allocations. """
         print('cleaning up')
         if not self.whatif:
             import RPi.GPIO as GPIO
             GPIO.cleanup()
 
     def extend(self):
+        """ Tells the actuators to extend """
         print('extending')
         if not self.whatif:
             import RPi.GPIO as GPIO
@@ -50,6 +63,7 @@ class DeskController():
             GPIO.output(self.relay_b, GPIO.HIGH)
 
     def retract(self):
+        """ Tells the actuators to retract """
         print('retracting')
         if not self.whatif:
             import RPi.GPIO as GPIO
@@ -57,6 +71,7 @@ class DeskController():
             GPIO.output(self.relay_a, GPIO.HIGH)
 
     def stop(self):
+        """ Tells the actuators to stop moving """
         print('stopping')
         if not self.whatif:
             import RPi.GPIO as GPIO
@@ -64,6 +79,11 @@ class DeskController():
             GPIO.output(self.relay_a, GPIO.LOW)
 
     def elevate(self, distance):
+        """ Tells the actuators to extend a distance
+        
+        distance  -- the distance in inches to extend
+
+        """
         extend_time = self.calculate_time(distance)
         self.extend()
         time.sleep(extend_time)
@@ -71,6 +91,11 @@ class DeskController():
         self.write_height(self.read_height() + distance)
 
     def lower(self, distance):
+        """ Tells the actuators to retract a distance
+
+            distance  -- the distance in inches to retract
+        
+        """
         lower_time = self.calculate_time(distance)
         self.retract()
         time.sleep(lower_time)
@@ -79,6 +104,11 @@ class DeskController():
             self.write_height(self.read_height() - distance)
 
     def move_to(self, ht):
+        """ Tells the actuators to move to a specific height.  Can be higher or lower than the current location.
+        
+        ht  -- the height above base in inches to move to.
+
+        """
         if ht > self.max_height:
             print('that is too high!')
             return
@@ -91,6 +121,7 @@ class DeskController():
             self.lower(abs(distance))
 
     def reset(self):
+        """ Resets the desk height to 0"""
         self.resetting = True
         self.lower(20)
         self.write_height(0)
@@ -111,8 +142,8 @@ class DeskController():
         f.write(str(height))
         f.close()
         
-        if self.cloud_client is not None:
-            self.cloud_client.send_height_to_azure(height)
+        if self.notification_sender is not None:
+            self.notification_sender.notify_height(height)
 
     def read_height(self):
         height = "0"
@@ -160,7 +191,7 @@ class AzureQueueClient:
         self.queue_name = queue_name
         self.device_name = device_name
     
-    def send_height_to_azure(self, ht):
+    def notify_height(self, ht):
 
         d = {}
         d['device_id'] = self.device_name
