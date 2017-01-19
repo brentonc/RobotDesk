@@ -54,8 +54,9 @@ def listen(whatif):
                     requests.exceptions.HTTPError,
                     requests.exceptions.ConnectionError):
                 #that's ok, log it, wait a bit, and try again
+                print("error, waiting and retrying.")
                 logging.exception('connection error.')
-                #wait 5 a bit and then retry
+                #wait a bit and then retry
                 time.sleep(10)
             except:
                 logging.exception('unexpected error: %s', sys.exc_info()[0])
