@@ -54,7 +54,7 @@ def listen(whatif):
                     requests.exceptions.HTTPError,
                     requests.exceptions.ConnectionError):
                 #that's ok, log it, wait a bit, and try again
-                print("error, waiting and retrying.")
+                print("connection or timeout error, waiting and retrying.")
                 logging.exception('connection error.')
                 #wait a bit and then retry
                 time.sleep(10)
