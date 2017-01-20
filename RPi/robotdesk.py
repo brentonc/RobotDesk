@@ -10,12 +10,12 @@ from azure.servicebus import ServiceBusService, Message
 class DeskController():
 
     def __init__(self,
-                    notification_sender,
-                    whatif=True,
-                    relay_a=4,
-                    relay_b=17,
-                    ht_file="ht.rd",
-                    max_height=20):
+                 notification_sender,
+                 whatif=True,
+                 relay_a=4,
+                 relay_b=17,
+                 ht_file="ht.rd",
+                 max_height=20):
         """ Initializes the DeskController so that it is ready for operation.abs
 
             notification_sender -- the sender that should be use to transmit updates.  must contain method notify_height(height)
@@ -182,7 +182,7 @@ class AzureQueueClient:
             self.device_name = socket.gethostname()
     
         except Exception:
-            sys.exit("Invalid or missing config.txt file.")
+            sys.exit("Invalid or missing config.rd file.")
     
     def __init__(self, key_name, key_value, namespace, queue_name, device_name):
         self.key_name = key_name
@@ -191,12 +191,17 @@ class AzureQueueClient:
         self.queue_name = queue_name
         self.device_name = device_name
     
-    def notify_height(self, ht):
+    def notify_height(self, height):
+        """
+        Notifies of the current height
+
+        height -- height to notify of
+        """
 
         d = {}
         d['device_id'] = self.device_name
         d['command_text'] = ""
-        d['to_height'] = "{:.9f}".format(ht)
+        d['to_height'] = "{:.9f}".format(height)
         d['move_initiate_time'] = time.strftime("%Y-%m-%dT%H:%M:%S")
         msgbody = json.dumps(d)
         msg = Message(str.encode(msgbody))
