@@ -18,7 +18,7 @@ class DeskController():
                  relay_a=4,
                  relay_b=17,
                  ht_file="ht.rd",
-                 max_height=20):
+                 max_height=18):
         """ Initializes the DeskController so that it is ready for operation.abs
 
             notification_sender -- the sender that should be use to transmit updates.
@@ -128,7 +128,7 @@ class DeskController():
     def reset(self):
         """ Resets the desk height to 0"""
         self.resetting = True
-        self.lower(20)
+        self.lower(self.max_height + 5)
         self.write_height(0)
         self.resetting = False
 
@@ -149,9 +149,9 @@ class DeskController():
         if float(height) < 0:
             print(('WARNING: height ' + str(height) + ' less than zero, reset recommended.'))
             height = 0
-        if float(height) > 18:
-            print(('WARNING: height' + str(height) + ' greater than max height (18), reset recommended.'))
-            height = 18
+        if float(height) > self.max_height:
+            print(('WARNING: height' + str(height) + ' greater than max height (' + str(self.max_height) + '), reset recommended.'))
+            height = self.max_height
         height_file = open(self.height_filename, 'w')
         height_file.write(str(height))
         height_file.close()
