@@ -1,22 +1,11 @@
+""" cloud listener program.  Operates desk based on commands from cloud service"""
 import sys
 import json
 import time
 import getopt
+import logging
 import requests
 import robotdesk
-import logging
-
-
-def main(argv):
-    """Primary entry point"""
-    logging.basicConfig(filename='robotdeskcloud.log', level=logging.WARNING)
-    whatif = False
-    opts, args = getopt.getopt(argv, "w")
-    for opt, arg in opts:
-        if opt == '-w':
-            whatif = True
-
-    listen(whatif)
 
 def listen(whatif):
     """ Main program.  Listens to web service for desk commands. """
@@ -65,6 +54,17 @@ def listen(whatif):
         logging.info("Stopping the robot desk cloud listener.  Have a nice day!")
         if desk is not None:
             desk.cleanup()
+
+def main(argv):
+    """Primary entry point"""
+    logging.basicConfig(filename='robotdeskcloud.log', level=logging.WARNING)
+    whatif = False
+    opts, args = getopt.getopt(argv, "w")
+    for opt, arg in opts:
+        if opt == '-w':
+            whatif = True
+
+    listen(whatif)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
