@@ -21,6 +21,8 @@ This repository contains the following:
 
 -t 'test run' mode.  Exercises a specific set of actions to exercise the software
 
+-q 'quiet' mode.  If specified no position messages will be sent to the cloud recorder.
+
 ## Usage
 Normal usage:
 `sudo python3 robotdesk.py`
@@ -33,4 +35,9 @@ Cloud command listener:
 
 ## Dependencies
 The RobotDesk program depends on the following external packages:
-* Azure SDK (pip install azure)
+* Raspberry Pi hardware
+* Python 3.*.  Not currently tested with python 2.*
+* Azure SDK
+ * pip install azure
+
+ 
