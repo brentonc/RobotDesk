@@ -8,7 +8,10 @@ from azure.servicebus import ServiceBusService, Message
 
 
 class DeskController():
-
+    """ The DeskController is responsible for issuing commands to the actuators, thereby 
+        causing the desk to move up and down.  It also tracks the current height of the desk.
+        
+    """
     def __init__(self,
                  notification_sender,
                  whatif=True,
@@ -18,8 +21,10 @@ class DeskController():
                  max_height=20):
         """ Initializes the DeskController so that it is ready for operation.abs
 
-            notification_sender -- the sender that should be use to transmit updates.  must contain method notify_height(height)
-            whatif              -- indicates whether or not to run in 'what if' mode.  'What if' mode causes most of the program to run, but does
+            notification_sender -- the sender that should be use to transmit updates.
+                                   Must contain method notify_height(height).
+            whatif              -- indicates whether or not to run in 'what if' mode.
+                                   'What if' mode causes most of the program to run, but does
                                    not actually signal the GPIO pins.
             relay_a             -- GPIO Pin number for the first relay
             relay_b             -- GPIO Pin number for the first relay
@@ -80,7 +85,7 @@ class DeskController():
 
     def elevate(self, distance):
         """ Tells the actuators to extend a distance
-        
+
         distance  -- the distance in inches to extend
 
         """
@@ -128,28 +133,38 @@ class DeskController():
         self.resetting = False
 
     def calculate_time(self, distance):
-        RATE = .6
-        return distance / RATE
+        """ calculates how long it will take to move the specified distance
+
+            distance -- the distance in inches to calculate for
+        """
+        rate = .6
+        return distance / rate
 
     def write_height(self, height):
+        """ writes the height to disk so the program knows the height of the DeskController
+            when it restarts
+
+            height -- number to write to disk
+        """
         if float(height) < 0:
             print(('WARNING: height ' + str(height) + ' less than zero, reset recommended.'))
             height = 0
         if float(height) > 18:
             print(('WARNING: height' + str(height) + ' greater than max height (18), reset recommended.'))
             height = 18
-        f = open(self.height_filename, 'w')
-        f.write(str(height))
-        f.close()
-        
+        height_file = open(self.height_filename, 'w')
+        height_file.write(str(height))
+        height_file.close()
+
         if self.notification_sender is not None:
             self.notification_sender.notify_height(height)
 
     def read_height(self):
+        """ reads the height from disk """
         height = "0"
         try:
-            f = open(self.height_filename, 'r')
-            height = f.read()
+            height_file = open(self.height_filename, 'r')
+            height = height_file.read()
         except IOError:
             print('WARNING: height not known.  Reset recommended.')
             self.write_height(height)  # sets height to 0, may not be correct
@@ -162,8 +177,9 @@ class DeskController():
         return float_height
 
     def where_am_i(self):
-        ht = self.read_height()
-        return ht
+        """returns the current height of the desk """
+        height = self.read_height()
+        return height
 
 
 class AzureQueueClient:
@@ -175,12 +191,12 @@ class AzureQueueClient:
 
         # Make sure we have the items in the config
         try:
-            self.key_name =config.get('Azure', 'servicebus_keyname')
+            self.key_name = config.get('Azure', 'servicebus_keyname')
             self.key_value = config.get('Azure', 'servicebus_keyvalue')
             self.namespace = config.get('Azure', 'servicebus_namespace')
             self.queue_name = config.get('Azure', 'servicebus_queue')
             self.device_name = socket.gethostname()
-    
+
         except Exception:
             sys.exit("Invalid or missing config.rd file.")
     
@@ -207,35 +223,36 @@ class AzureQueueClient:
         msg = Message(str.encode(msgbody))
 
         sbs = ServiceBusService(self.namespace,
-            shared_access_key_name=self.key_name,
-            shared_access_key_value=self.key_value)
+                                shared_access_key_name=self.key_name,
+                                shared_access_key_value=self.key_value)
         print('sending...')
 
         sbs.send_queue_message(self.queue_name, msg)
         print('sent ' + msgbody)
 
 
-def run(whatif):
+def run(whatif, notify=True):
+    azure = None
+    if notify:
+        # Load the config info from the config file
+        config = configparser.ConfigParser()
+        config.read("config.rd")
 
- # Load the config info from the config file
-    config = configparser.ConfigParser()
-    config.read("config.rd")
+        # Make sure we have the items in the config
+        try:
+            azure_servicebus_keyname = config.get('Azure', 'servicebus_keyname')
+            azure_servicebus_keyvalue = config.get('Azure', 'servicebus_keyvalue')
+            azure_servicebus_namespace = config.get('Azure', 'servicebus_namespace')
+            azure_servicebus_queue = config.get('Azure', 'servicebus_queue')
 
-    # Make sure we have the items in the config
-    try:
-        azure_servicebus_keyname = config.get('Azure', 'servicebus_keyname')
-        azure_servicebus_keyvalue = config.get('Azure', 'servicebus_keyvalue')
-        azure_servicebus_namespace = config.get('Azure', 'servicebus_namespace')
-        azure_servicebus_queue = config.get('Azure', 'servicebus_queue')
+        except Exception:
+            sys.exit("Invalid or missing config.txt file.")
 
-    except Exception:
-        sys.exit("Invalid or missing config.txt file.")
-
-    azure = AzureQueueClient(azure_servicebus_keyname,
-                azure_servicebus_keyvalue,
-                azure_servicebus_namespace,
-                azure_servicebus_queue,
-                socket.gethostname())
+        azure = AzureQueueClient(azure_servicebus_keyname,
+                                 azure_servicebus_keyvalue,
+                                 azure_servicebus_namespace,
+                                 azure_servicebus_queue,
+                                 socket.gethostname())
 
     desk = DeskController(azure, whatif)
     try:
@@ -252,8 +269,8 @@ def run(whatif):
                 break
             else:
                 try:
-                    ht = float(move_to_raw)
-                    desk.move_to(ht)
+                    height = float(move_to_raw)
+                    desk.move_to(height)
                 except ValueError:
                     print('Unable to determine height to move to.')
 
@@ -280,18 +297,20 @@ def testrun(whatif):
 def main(argv):
     whatif = False
     testrunmode = False
-
-    opts, args = getopt.getopt(argv, "wt")
+    notify = True
+    opts, args = getopt.getopt(argv, "wtq", ["whatif", "testrun", "quiet"])
     for opt, arg in opts:
-        if opt == '-w':
+        if opt in ("-w", "--whatif"):
             whatif = True
-        elif opt == '-t':
+        elif opt in ("-t", "--testrun"):
             testrunmode = True
-
+        elif opt in ("-q", "--quiet"):
+            notify = False
+                
     if testrunmode:
         testrun(whatif)
     else:
-        run(whatif)
+        run(whatif, notify)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
