@@ -8,10 +8,10 @@ from azure.servicebus import ServiceBusService, Message
 
 
 class DeskController():
-    """ The DeskController is responsible for issuing commands to the actuators, thereby 
+    """ The DeskController is responsible for issuing commands to the actuators, thereby
         causing the desk to move up and down.  It also tracks the current height of the desk.
-        
     """
+
     def __init__(self,
                  notification_sender,
                  whatif=True,
@@ -99,7 +99,6 @@ class DeskController():
         """ Tells the actuators to retract a distance
 
             distance  -- the distance in inches to retract
-        
         """
         lower_time = self.calculate_time(distance)
         self.retract()
@@ -108,17 +107,18 @@ class DeskController():
         if not self.resetting:
             self.write_height(self.read_height() - distance)
 
-    def move_to(self, ht):
-        """ Tells the actuators to move to a specific height.  Can be higher or lower than the current location.
-        
-        ht  -- the height above base in inches to move to.
+    def move_to(self, height):
+        """ Tells the actuators to move to a specific height.
+        Can be higher or lower than the current location.
+
+        height  -- the height above base in inches to move to.
 
         """
-        if ht > self.max_height:
+        if height > self.max_height:
             print('that is too high!')
             return
         current = self.where_am_i()
-        distance = ht - current
+        distance = height - current
         print(("distance to move:" + str(distance)))
         if distance > 0:
             self.elevate(abs(distance))
@@ -183,30 +183,20 @@ class DeskController():
 
 
 class AzureQueueClient:
+    """ The AzureQueueClient provides the ability to notify 
+        a Microsoft Azure Service Bus Queue with messages indicating
+        the current height of the desk.
 
-    def load_azure_config(self):
-        # Load the config info from the config file
-        config = configparser.ConfigParser()
-        config.read("config.rd")
+    """
 
-        # Make sure we have the items in the config
-        try:
-            self.key_name = config.get('Azure', 'servicebus_keyname')
-            self.key_value = config.get('Azure', 'servicebus_keyvalue')
-            self.namespace = config.get('Azure', 'servicebus_namespace')
-            self.queue_name = config.get('Azure', 'servicebus_queue')
-            self.device_name = socket.gethostname()
-
-        except Exception:
-            sys.exit("Invalid or missing config.rd file.")
-    
     def __init__(self, key_name, key_value, namespace, queue_name, device_name):
+        """initializes the object with the values needed to operate """
         self.key_name = key_name
         self.key_value = key_value
         self.namespace = namespace
         self.queue_name = queue_name
         self.device_name = device_name
-    
+
     def notify_height(self, height):
         """
         Notifies of the current height
@@ -232,6 +222,12 @@ class AzureQueueClient:
 
 
 def run(whatif, notify=True):
+    """ Main program for robotdesk.py
+
+        1) Loads configuration if needed
+        2) Inializes a DeskController
+        3) Provides the user input mechanism and translates to DeskController commands
+    """
     azure = None
     if notify:
         # Load the config info from the config file
@@ -256,7 +252,7 @@ def run(whatif, notify=True):
 
     desk = DeskController(azure, whatif)
     try:
-        while(True):
+        while True:
             print(('Height is ' + str(desk.where_am_i())))
             move_to_raw = input("Move to:")
             if move_to_raw == "reset":
@@ -279,6 +275,7 @@ def run(whatif, notify=True):
 
 
 def testrun(whatif):
+    """ Executes a test run. """
     try:
         desk = DeskController(whatif)
         desk.elevate(2)
@@ -295,6 +292,8 @@ def testrun(whatif):
 
 
 def main(argv):
+    """ Main program.  Interprets arguments and initiates appropriate run mode"""
+
     whatif = False
     testrunmode = False
     notify = True
@@ -306,7 +305,7 @@ def main(argv):
             testrunmode = True
         elif opt in ("-q", "--quiet"):
             notify = False
-                
+
     if testrunmode:
         testrun(whatif)
     else:
