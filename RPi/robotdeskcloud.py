@@ -3,6 +3,7 @@ import sys
 import json
 import time
 import getopt
+import configparser
 import logging
 import requests
 import robotdesk
@@ -13,10 +14,15 @@ def listen(whatif):
     desk = None
     timeout_seconds = 60
     try:
+        # Load the config info from the config file
+        config = configparser.ConfigParser()
+        config.read("config.rd")
+        command_url = config.get('CloudListener', 'command_url')
+        height_info_url = config.get('CloudListener', 'height_url')
+        print('Listening on: ', command_url)
         desk = robotdesk.DeskController(notification_sender=None, whatif=whatif)
         session = requests.Session()
-        command_url = "https://bcalexaapp.azurewebsites.net/api/desk/command"
-        height_info_url = "https://bcalexaapp.azurewebsites.net/api/desk/heightinfo"
+
         headers = {
             'Content-type': 'application/json'
         }
